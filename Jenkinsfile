@@ -1,19 +1,19 @@
 
 node {
-   def sonarUrl = 'sonar.host.url=http://172.31.30.136:9000'
+   def sonarUrl = 'sonar.host.url=http://172.31.15.139:9000'
    def mvn = tool (name: 'maven3', type: 'maven') + '/bin/mvn'
    stage('SCM Checkout'){
     // Clone repo
 	git branch: 'master', 
 	credentialsId: 'github', 
-	url: 'https://github.com/javahometech/myweb'
+	url: 'https://github.com/yangoti123/myweb'
    
    }
    
    stage('Sonar Publish'){
-	   withCredentials([string(credentialsId: 'sonarqube', variable: 'sonarToken')]) {
-        def sonarToken = "sonar.login=${sonarToken}"
-        sh "${mvn} sonar:sonar -D${sonarUrl}  -D${sonarToken}"
+	   withCredentials([string(credentialsId: 'sonartoken', variable: 'sonartoken')]) {
+        def sonartoken = "sonar.login=${sonartoken}"
+        sh "${mvn} sonar:sonar -D${sonarUrl}  -D${sonartoken}"
 	 }
       
    }
@@ -26,13 +26,13 @@ node {
    }
    
    stage('deploy-dev'){
-       def tomcatDevIp = '172.31.28.172'
+       def tomcatDevIp = '172.31.23.143'
 	   def tomcatHome = '/opt/tomcat8/'
 	   def webApps = tomcatHome+'webapps/'
 	   def tomcatStart = "${tomcatHome}bin/startup.sh"
 	   def tomcatStop = "${tomcatHome}bin/shutdown.sh"
 	   
-	   sshagent (credentials: ['tomcat-dev']) {
+	   sshagent (credentials: ['tomcat-baskar']) {
 	      sh "scp -o StrictHostKeyChecking=no target/myweb*.war ec2-user@${tomcatDevIp}:${webApps}myweb.war"
           sh "ssh ec2-user@${tomcatDevIp} ${tomcatStop}"
 		  sh "ssh ec2-user@${tomcatDevIp} ${tomcatStart}"
@@ -44,7 +44,7 @@ node {
 							   Job Name: ${env.JOB_NAME}
 
 Thanks,
-DevOps Team""", cc: '', from: '', replyTo: '', subject: "${env.JOB_NAME} Success", to: 'hari.kammana@gmail.com'
+DevOps Team""", cc: '', from: '', replyTo: '', subject: "${env.JOB_NAME} Success", to: 'ybr4b9@gmail.com'
    
    }
 }
